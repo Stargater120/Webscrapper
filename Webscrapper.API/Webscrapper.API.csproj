@@ -19,4 +19,8 @@
       <ProjectReference Include="..\Webscrapper.CORE\Webscrapper.CORE.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="screenshot.png" />
+    </ItemGroup>
+
 </Project>
