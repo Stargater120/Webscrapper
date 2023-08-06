@@ -11,8 +11,8 @@ public class DBContext
     {
         _client = new MongoClient(connectionString);
         var db = _client.GetDatabase("Fitmart");
-        FitmartPrices = db.GetCollection<Fitmart>("Prices");
+        FitmartItems = db.GetCollection<FitmartItem>("Items");
     }
     
-    public IMongoCollection<Fitmart> FitmartPrices { get; set; }
+    public IMongoCollection<FitmartItem> FitmartItems { get; set; }
 }

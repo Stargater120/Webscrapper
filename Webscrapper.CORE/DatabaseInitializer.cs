@@ -8,7 +8,7 @@ public class DatabaseInitializer
 {
     private DBContext _context;
 
-    public void SetMongoClient()
+    public DatabaseInitializer()
     {
         var appSettings =
             JsonConvert.DeserializeObject<WebscrapperAppSettings>(File.ReadAllText("appsettings.json"));
