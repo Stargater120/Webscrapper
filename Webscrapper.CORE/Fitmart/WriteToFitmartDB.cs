@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Amazon.Runtime.Internal.Transform;
+using MongoDB.Driver;
 using Webscrapper.Database;
 using Webscrapper.Database.Models;
 
@@ -12,7 +13,7 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
 
     public async Task CreateOrUpdateItems(Dictionary<string, Dictionary<string, string>> scrapings)
     {
-
+        var newPriceDic = new Dictionary<string, Dictionary<string, string>>();
         var items = await _context.FitmartItems.AsQueryable().ToListAsync();
         foreach (var scraping in scrapings)
         {
@@ -25,6 +26,10 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
                 var updater = Builders<FitmartItem>.Update.Set(x => x.Updated, DateTime.Now)
                     .Set(x => x.Price, double.Parse(price));
                 var item = items.Find(c => c.Name == scraping.Key);
+                if (item.Price != double.Parse(price))
+                {
+                    newPriceDic.Add(scraping);
+                }
                 await _context.FitmartItems.UpdateOneAsync(filter, updater, null,
                     CancellationToken.None);
                 continue;

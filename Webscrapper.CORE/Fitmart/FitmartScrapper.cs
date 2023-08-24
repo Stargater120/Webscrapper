@@ -1,6 +1,7 @@
 ﻿using PuppeteerSharp;
 using Webscrapper.CORE.Fitmart;
 using Webscrapper.Database;
+using Webscrapper.Database.Models;
 
 namespace Webscrapper.CORE;
 
@@ -16,6 +17,8 @@ public class FitmartScrapper
             Headless = true
         });
         var writer = new WriteToFitmartDB(new DatabaseInitializer());
+        await GetBannerImage(await OpenSite($"https://www.fitmart.de"));
+        return;
         try
         {
             foreach (var site in sites)
@@ -93,6 +96,28 @@ public class FitmartScrapper
         }
 
         return infoDic;
+    }
+
+    private async Task GetBannerImage(IPage page)
+    {
+        var div = await page.QuerySelectorAsync(".flickity-slider");
+        var images = await div.QuerySelectorAllAsync("img");
+        var promotionBanner = new PromotionBanner()
+        {
+            CreateDate = DateTime.Now,
+            Id = Guid.NewGuid()
+        };
+        using var httpClient = new HttpClient();
+        {
+            foreach (var image in images)
+            {
+                var handle = await image.GetPropertyAsync("src");
+                var src = await handle.JsonValueAsync<string>();
+                var imageBytes = await httpClient.GetByteArrayAsync(src);
+                promotionBanner.Images.Add(imageBytes);
+            }
+        }
+        
     }
 
     private async Task<Dictionary<string, string>> AddEntry(Dictionary<string, string> dic, string key, IJSHandle handle)
