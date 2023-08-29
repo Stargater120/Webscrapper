@@ -1,5 +1,6 @@
 ﻿using Amazon.Runtime.Internal.Transform;
 using MongoDB.Driver;
+using NotificationService.Types;
 using Webscrapper.Database;
 using Webscrapper.Database.Models;
 
@@ -11,10 +12,11 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
     {
     }
 
-    public async Task CreateOrUpdateItems(Dictionary<string, Dictionary<string, string>> scrapings)
+    public async Task<FitmartEmailNotification> CreateOrUpdateItems(Dictionary<string, Dictionary<string, string>> scrapings)
     {
         var newPriceDic = new Dictionary<string, Dictionary<string, string>>();
         var items = await _context.FitmartItems.AsQueryable().ToListAsync();
+        var updatedItems = new FitmartEmailNotification();
         foreach (var scraping in scrapings)
         {
             var price = scraping.Value["price"];
@@ -32,6 +34,12 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
                 }
                 await _context.FitmartItems.UpdateOneAsync(filter, updater, null,
                     CancellationToken.None);
+                updatedItems.Items.Add(new Item()
+                {
+                    Name = item.Name,
+                    OldPrice = item.Price,
+                    NewPrice = double.Parse(price)
+                });
                 continue;
             }
 
@@ -46,5 +54,7 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
             };
             await _context.FitmartItems.InsertOneAsync(entry);
         }
+
+        return updatedItems;
     }
 }

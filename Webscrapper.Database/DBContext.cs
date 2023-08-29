@@ -12,9 +12,9 @@ public class DBContext
         _client = new MongoClient(connectionString);
         var db = _client.GetDatabase("Fitmart");
         FitmartItems = db.GetCollection<FitmartItem>("Items");
-        PromotionBanner = db.GetCollection<PromotionBanner>("PromotionBanners");
+        PromotionBanner = db.GetCollection<SitePromotionBanners>("PromotionBanners");
     }
     
     public IMongoCollection<FitmartItem> FitmartItems { get; set; }
-    public IMongoCollection<PromotionBanner> PromotionBanner { get; set; }
+    public IMongoCollection<SitePromotionBanners> PromotionBanner { get; set; }
 }

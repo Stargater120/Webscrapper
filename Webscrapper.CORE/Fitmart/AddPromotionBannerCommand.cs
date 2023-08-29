@@ -10,18 +10,24 @@ public class AddPromotionBannerCommand : NeedsWebscrapperContext
     {
     }
 
-    public async Task AddOrUpdatePromotionBanner(PromotionBanner promotionBanner)
+    public async Task<bool> AddOrUpdatePromotionBanner(SitePromotionBanners sitePromotionBanners)
     {
-        var filter = Builders<PromotionBanner>.Filter.Eq(x => x.SiteName, promotionBanner.SiteName);
-        var banners = await _context.PromotionBanner.Find(filter).FirstAsync();
-        if (String.IsNullOrWhiteSpace(banners.SiteName))
+        var filter = Builders<SitePromotionBanners>.Filter.Eq(x => x.SiteName, sitePromotionBanners.SiteName);
+        if (await _context.PromotionBanner.EstimatedDocumentCountAsync() > 0)
         {
-            await _context.PromotionBanner.InsertOneAsync(promotionBanner);
-            return;
+            var banners = await _context.PromotionBanner.Find(filter).FirstAsync();
+            if (String.IsNullOrWhiteSpace(banners.SiteName))
+            {
+                await _context.PromotionBanner.InsertOneAsync(sitePromotionBanners);
+                return false;
+            }
+            var update = Builders<SitePromotionBanners>.Update.Set(x => x.Images, sitePromotionBanners.Images)
+                .Set(x => x.CreateDate, DateTime.Now);
+            await _context.PromotionBanner.UpdateOneAsync(filter, update);
+            return true;
         }
-
-        var update = Builders<PromotionBanner>.Update.Set(x => x.Images, promotionBanner.Images)
-            .Set(x => x.CreateDate, DateTime.Now);
-        await _context.PromotionBanner.UpdateOneAsync(filter, update);
+        
+        await _context.PromotionBanner.InsertOneAsync(sitePromotionBanners);
+        return true;
     }
 }

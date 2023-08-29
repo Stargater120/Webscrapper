@@ -1,6 +1,6 @@
 ﻿namespace Webscrapper.Database.Models;
 
-public class PromotionBanner
+public class SitePromotionBanners
 {
     public Guid Id { get; set; }
     public DateTime CreateDate { get; set; }

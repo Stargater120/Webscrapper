@@ -1,4 +1,5 @@
-﻿using PuppeteerSharp;
+﻿using NotificationService.Types;
+using PuppeteerSharp;
 using Webscrapper.CORE.Fitmart;
 using Webscrapper.Database;
 using Webscrapper.Database.Models;
@@ -17,15 +18,15 @@ public class FitmartScrapper
             Headless = true
         });
         var writer = new WriteToFitmartDB(new DatabaseInitializer());
-        await GetBannerImage(await OpenSite($"https://www.fitmart.de"));
-        return;
+        var bannerCommand = new AddPromotionBannerCommand(new DatabaseInitializer());
+        Dictionary<string, Dictionary<string, string>> infoDic = new();
+        var promotionBanner = await GetBannerImage(await OpenSite($"https://www.fitmart.de"));
         try
         {
             foreach (var site in sites)
             {
                 var page = await OpenSite($"https://www.fitmart.de{site}");
-                var infoDic = await GetInformationFromSite(page);
-                await writer.CreateOrUpdateItems(infoDic);
+                infoDic = await GetInformationFromSite(page);
             }
         }
         catch (Exception e)
@@ -37,6 +38,15 @@ public class FitmartScrapper
         {
             await browser.CloseAsync();
             Console.WriteLine("Scrapping done!");
+        }
+
+        var bannersGotUpdated = await bannerCommand.AddOrUpdatePromotionBanner(promotionBanner);
+        var updatedEntries = await writer.CreateOrUpdateItems(infoDic);
+        if (updatedEntries.Items.Count > 0 || bannersGotUpdated)
+        {
+            updatedEntries.Banner = promotionBanner.Images;
+            var fitmartFactory = new FitmartNotificationFactory();
+            fitmartFactory.CreateFitmartEMail(updatedEntries);
         }
     }
 
@@ -54,8 +64,7 @@ public class FitmartScrapper
         {
             // ignored
         }
-
-
+        
         return page;
     }
 
@@ -98,14 +107,15 @@ public class FitmartScrapper
         return infoDic;
     }
 
-    private async Task GetBannerImage(IPage page)
+    private async Task<SitePromotionBanners> GetBannerImage(IPage page)
     {
         var div = await page.QuerySelectorAsync(".flickity-slider");
         var images = await div.QuerySelectorAllAsync("img");
-        var promotionBanner = new PromotionBanner()
+        var promotionBanner = new SitePromotionBanners()
         {
             CreateDate = DateTime.Now,
-            Id = Guid.NewGuid()
+            Id = Guid.NewGuid(),
+            SiteName = "Fitmart"
         };
         using var httpClient = new HttpClient();
         {
@@ -117,7 +127,7 @@ public class FitmartScrapper
                 promotionBanner.Images.Add(imageBytes);
             }
         }
-        
+        return promotionBanner;
     }
 
     private async Task<Dictionary<string, string>> AddEntry(Dictionary<string, string> dic, string key, IJSHandle handle)
