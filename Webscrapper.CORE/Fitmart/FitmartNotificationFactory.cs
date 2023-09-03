@@ -20,9 +20,9 @@ public class FitmartNotificationFactory
         var nameCounter = 1;
         foreach (var bytes in notificationItems.Banner)
         {
-            var image = builder.LinkedResources.Add($"banner{nameCounter}", bytes);
+            var image = builder.LinkedResources.Add($"banner{nameCounter}.jpg", bytes);
             image.ContentId = MimeUtils.GenerateMessageId();
-            htmlBody += $"<img src='cid:{image.ContentId}'> <br>";
+            htmlBody += $"<img src='cid:{image.ContentId}' style='height:150px; width:400px;'> <br>";
             // builder.Attachments.Add($"banner{nameCounter}", bytes);
             nameCounter++;
         }

@@ -31,15 +31,16 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
                 if (item.Price != double.Parse(price))
                 {
                     newPriceDic.Add(scraping);
+                    await _context.FitmartItems.UpdateOneAsync(filter, updater, null,
+                        CancellationToken.None);
+                    updatedItems.Items.Add(new Item()
+                    {
+                        Name = item.Name,
+                        OldPrice = item.Price,
+                        NewPrice = double.Parse(price)
+                    });
                 }
-                await _context.FitmartItems.UpdateOneAsync(filter, updater, null,
-                    CancellationToken.None);
-                updatedItems.Items.Add(new Item()
-                {
-                    Name = item.Name,
-                    OldPrice = item.Price,
-                    NewPrice = double.Parse(price)
-                });
+                
                 continue;
             }
 
