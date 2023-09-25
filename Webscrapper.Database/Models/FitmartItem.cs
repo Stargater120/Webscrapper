@@ -7,6 +7,7 @@ public class FitmartItem
     public double Price { get; set; }
     public string Vendor { get; set; }
     public string Image { get; set; }
+    public string State { get; set; }
     public DateTime CreationDate { get; set; }
     public DateTime? Updated { get; set; }
 }

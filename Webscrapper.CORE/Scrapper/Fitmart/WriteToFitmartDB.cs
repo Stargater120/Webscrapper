@@ -53,6 +53,10 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
                 Vendor = scraping.Value["vendor"],
                 Image = scraping.Value["image"]
             };
+            if (scraping.Value.Keys.Contains("state"))
+            {
+                entry.State = scraping.Value["state"];
+            }
             await _context.FitmartItems.InsertOneAsync(entry);
         }
 

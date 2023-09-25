@@ -95,6 +95,13 @@ public class FitmartScrapper
                 var vendor =
                     await (await listEntry.QuerySelectorAsync(".productitem--vendor")).GetPropertyAsync("innerText");
                 entryDic = await AddEntry(entryDic, "vendor", vendor);
+                var imageFigure = await (await listEntry.QuerySelectorAsync(".productitem--image-link")).QuerySelectorAsync(".productitem--image");
+                var badgeSpan = await imageFigure.QuerySelectorAsync(".productitem__badge");
+                var style = await badgeSpan.GetPropertyAsync("class");
+                if (style.RemoteObject.Value is null)
+                {
+                    entryDic = await AddEntry(entryDic, "state", style);
+                }
                 infoDic.Add(name, entryDic);
             }
         }

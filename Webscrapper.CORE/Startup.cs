@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using Webscrapper.CORE.Security.Authentication;
 
 namespace Webscrapper.CORE;
 
@@ -8,6 +10,8 @@ public static class Startup
     {
         var scrapper = new FitmartScrapper();
         scrapper.Scrap();
-        return service;
+        return service
+            .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()))
+            .AddScoped<ITokenCreator, TokenCreator>();
     }
 }

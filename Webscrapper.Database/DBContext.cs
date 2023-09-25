@@ -13,8 +13,12 @@ public class DBContext
         var db = _client.GetDatabase("Fitmart");
         FitmartItems = db.GetCollection<FitmartItem>("Items");
         PromotionBanner = db.GetCollection<SitePromotionBanners>("PromotionBanners");
+        User = db.GetCollection<User>("Users");
+        Subscription = db.GetCollection<Subscription>("Subscription");
     }
     
     public IMongoCollection<FitmartItem> FitmartItems { get; set; }
     public IMongoCollection<SitePromotionBanners> PromotionBanner { get; set; }
+    public IMongoCollection<User> User { get; set; }
+    public IMongoCollection<Subscription> Subscription { get; set; }
 }
