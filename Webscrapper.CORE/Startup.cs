@@ -21,6 +21,7 @@ public static class Startup
             .AddSingleton<ECScrapper>()
             .AddScoped<IProductMapper, ProductMapper>()
             .AddScoped<IPaginationMapper, PaginationMapper>()
+            .AddScoped<ISubscriptionMapper, SubscriptionMapper>()
             .AddSingleton<FitmartScrapper>();
             // .RegisterHostedServices();
     }
