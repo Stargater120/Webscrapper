@@ -1,9 +1,14 @@
 ﻿using System.Security.Claims;
 using System.Security.Cryptography;
+using BCrypt.Net;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Webscrapper.API;
+using Webscrapper.Database;
 using Webscrapper.Database.Models;
 
 namespace Webscrapper.CORE.Security.Authentication;
@@ -18,11 +23,10 @@ public class TokenCreator : ITokenCreator
 {
     private readonly RSA _key;
 
-    public TokenCreator(IServiceProvider provider)
+    public TokenCreator(KeyStore keyStore)
     {
-        var appSettings = provider.GetRequiredService<WebscrapperAppSettings>();
         _key = RSA.Create();
-        _key.ImportRSAPrivateKey(appSettings.RSAKey, out _);
+        _key.ImportRSAPrivateKey(keyStore.RSAKey, out _);
     }
 
     public string CreateToken(User user)
@@ -42,8 +46,8 @@ public class TokenCreator : ITokenCreator
 
     public string CreateRefreshToken()
     {
+        string Token = Guid.NewGuid().ToString() + Guid.NewGuid();
 
-
-        return String.Empty;
+        return BCrypt.Net.BCrypt.EnhancedHashPassword(Token, HashType.SHA512);
     }
 }

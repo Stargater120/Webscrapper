@@ -11,4 +11,5 @@ public class User
     public string LastName { get; set; }
     public List<Guid> SubscriptionIds { get; set; }
     public ClaimsIdentity ClaimsIdentity { get; set; }
+    public string RefreshToken { get; set; }
 }

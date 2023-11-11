@@ -25,15 +25,17 @@ public class LoginCommandHandler : NeedsDBContext, IRequestHandler<LoginCommand,
     public async Task<LoginPayload> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var pwHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-        var filter = Builders<User>.Filter.And(Builders<User>.Filter.Eq(x => x.Email, request.Email),
-            Builders<User>.Filter.Eq(x => x.Password, pwHash));
+        var filter = Builders<User>.Filter.Eq(x => x.Email, request.Email);
+        
         var user = await _dbContext.User.Find(filter).FirstAsync(cancellationToken);
-
-        return new LoginPayload()
+        var payload = new LoginPayload()
         {
             AuthenticationToken = _tokenCreator.CreateToken(user),
             RefreshToken = _tokenCreator.CreateRefreshToken(),
             UserId = user.Id
         };
+        var update = Builders<User>.Update.Set(x => x.RefreshToken, payload.RefreshToken);
+        await _dbContext.User.UpdateOneAsync(filter, update, null, cancellationToken);
+        return payload;
     }
 }

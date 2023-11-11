@@ -10,11 +10,12 @@ using Webscrapper.CORE;
 var builder = WebApplication.CreateBuilder(args);
 var configManager = builder.Configuration;
 var config = new WebscrapperAppSettings();
-configManager.Bind(config);
 builder.Services.Configure<WebscrapperAppSettings>(configManager);
+configManager.Bind(config);
+
 var rsaKey = RSA.Create();
 var privateKey = rsaKey.ExportRSAPrivateKey();
-config.RSAKey = privateKey;
+
 // Add services to the container.
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication("jwt").AddJwtBearer("jwt", o =>
@@ -45,12 +46,30 @@ builder.Services.AddAuthentication("jwt").AddJwtBearer("jwt", o =>
 
     o.MapInboundClaims = false;
 });
+builder.Services.AddSingleton<KeyStore>(store =>
+{
+    var keyStore = new KeyStore();
+    keyStore.RSAKey = privateKey;
+    return keyStore;
+});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.RegisterServices();
+
 builder.Services.RegisterNotificationServices();
+
+builder.Services.AddCors(x =>
+{
+    x.AddPolicy("Price seer", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -61,6 +80,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Price seer");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

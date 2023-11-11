@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectVulkan.Core.HostedService;
+using Webscrapper.CORE.Mapper;
 using Webscrapper.CORE.Scrapper;
 using Webscrapper.CORE.Security.Authentication;
 using Webscrapper.Database;
@@ -17,8 +19,10 @@ public static class Startup
             .AddScoped<ITokenCreator, TokenCreator>()
             .AddScoped<DatabaseInitializer>()
             .AddSingleton<ECScrapper>()
-            .AddSingleton<FitmartScrapper>()
-            .RegisterHostedServices();
+            .AddScoped<IProductMapper, ProductMapper>()
+            .AddScoped<IPaginationMapper, PaginationMapper>()
+            .AddSingleton<FitmartScrapper>();
+            // .RegisterHostedServices();
     }
 
     private static IServiceCollection RegisterHostedServices(this IServiceCollection service)
