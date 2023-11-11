@@ -1,9 +1,9 @@
 ﻿namespace Webscrapper.Database.Models;
 
-public class Subscription
+public class Website
 {
     public Guid Id { get; set; }
-    public string SearchTerm { get; set; }
     public string SiteName { get; set; }
-    public string Url { get; set; }
+    public string Baselink { get; set; }
+    public List<string> Categories { get; set; }
 }

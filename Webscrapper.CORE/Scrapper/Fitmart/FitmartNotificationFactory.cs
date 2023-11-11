@@ -8,7 +8,7 @@ namespace Webscrapper.CORE.Fitmart;
 public class FitmartNotificationFactory
 {
     private readonly EmailService _emailService = new EmailService();
-    public void CreateFitmartEMail(FitmartEmailNotification notificationItems)
+    public void CreateFitmartEMail(EmailNotification notificationItems)
     {
         // Dictionary<string, Dictionary<string, string>> sendDic
         var email = new MimeMessage();

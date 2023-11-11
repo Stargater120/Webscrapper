@@ -1,6 +1,6 @@
 ﻿namespace NotificationService.Types;
 
-public class FitmartEmailNotification
+public class EmailNotification
 {
     public List<byte[]> Banner { get; set; } = new List<byte[]>();
     public List<Item> Items { get; set; } = new List<Item>();

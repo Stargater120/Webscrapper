@@ -12,11 +12,11 @@ public class WriteToFitmartDB : NeedsWebscrapperContext
     {
     }
 
-    public async Task<FitmartEmailNotification> CreateOrUpdateItems(Dictionary<string, Dictionary<string, string>> scrapings)
+    public async Task<EmailNotification> CreateOrUpdateItems(Dictionary<string, Dictionary<string, string>> scrapings)
     {
         var newPriceDic = new Dictionary<string, Dictionary<string, string>>();
         var items = await _context.FitmartItems.AsQueryable().ToListAsync();
-        var updatedItems = new FitmartEmailNotification();
+        var updatedItems = new EmailNotification();
         foreach (var scraping in scrapings)
         {
             var price = scraping.Value["price"];

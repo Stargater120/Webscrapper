@@ -5,7 +5,7 @@ using Webscrapper.Database.Models;
 
 namespace Webscrapper.CORE.MediatR.Commands;
 
-public class CreatUserCommand : IRequest<Unit>
+public class CreateUserCommand : IRequest<Unit>
 {
     public string Email { get; set; }
     public string Password { get; set; }
@@ -14,13 +14,13 @@ public class CreatUserCommand : IRequest<Unit>
     public List<Guid> Subscriptions { get; set; }
 }
 
-public class CreateUserCommandHandler : NeedsDBContext, IRequestHandler<CreatUserCommand, Unit>
+public class CreateUserCommandHandler : NeedsDBContext, IRequestHandler<CreateUserCommand, Unit>
 {
     public CreateUserCommandHandler(DatabaseInitializer databaseInitializer) : base(databaseInitializer)
     {
     }
 
-    public async Task<Unit> Handle(CreatUserCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var newUser = new User()
         {

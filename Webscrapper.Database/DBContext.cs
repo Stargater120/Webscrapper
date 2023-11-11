@@ -15,10 +15,14 @@ public class DBContext
         PromotionBanner = db.GetCollection<SitePromotionBanners>("PromotionBanners");
         User = db.GetCollection<User>("Users");
         Subscription = db.GetCollection<Subscription>("Subscription");
+        Websites = db.GetCollection<Website>("Website");
+        Products = db.GetCollection<Product>("Product");
     }
     
     public IMongoCollection<FitmartItem> FitmartItems { get; set; }
     public IMongoCollection<SitePromotionBanners> PromotionBanner { get; set; }
     public IMongoCollection<User> User { get; set; }
     public IMongoCollection<Subscription> Subscription { get; set; }
+    public IMongoCollection<Website> Websites { get; set; }
+    public IMongoCollection<Product> Products { get; set; }
 }
